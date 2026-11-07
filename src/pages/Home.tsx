@@ -1,4 +1,5 @@
 import { useState, useEffect} from "react";
+import toast from "react-hot-toast";
 import { Brain, FileText, Database, Menu, X } from "lucide-react";
 import { Navbar, Container, Row, Col, Badge, Button } from "react-bootstrap";
 import FileUpload from "../components/FileUpload";
@@ -53,8 +54,9 @@ const Home = () => {
     try {
       await uploadDocument(file);
       await loadDocuments();
+      toast.success("Document uploaded and processed");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Upload failed");
+        toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -67,6 +69,7 @@ const Home = () => {
       setMessages([]);
     }
     await loadDocuments();
+    toast.success("Document deleted");
   };
 
     const handleSelectDoc = async (id: string) => {
@@ -135,6 +138,7 @@ const Home = () => {
         time: now,
       };
       setMessages((prev) => [...prev, errorMsg]);
+       toast.error("Failed to get answer. Try again.");
     } finally {
       setIsLoading(false);
     }
