@@ -1,80 +1,76 @@
-import { FileText, File, FileType } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
+import type { DocumentItem } from "../services/api";
 
-interface Document {
-  id: number;
-  name: string;
-  type: "pdf" | "txt" | "doc";
-  size: string;
-  date: string;
-  status: "ready" | "processing";
-  active?: boolean;
+interface DocumentListProps {
+  documents: DocumentItem[];
+  selectedDocId: string | null;
+  onSelect: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-const documents: Document[] = [
-  {
-    id: 1,
-    name: "Machine_Learning_Basics.pdf",
-    type: "pdf",
-    size: "2.4 MB",
-    date: "2 hours ago",
-    status: "ready",
-    active: true,
-  },
-  {
-    id: 2,
-    name: "Project_Requirements.docx",
-    type: "doc",
-    size: "856 KB",
-    date: "5 hours ago",
-    status: "ready",
-  },
-  {
-    id: 3,
-    name: "Research_Notes.txt",
-    type: "txt",
-    size: "124 KB",
-    date: "1 day ago",
-    status: "ready",
-  },
-  {
-    id: 4,
-    name: "API_Documentation.pdf",
-    type: "pdf",
-    size: "5.1 MB",
-    date: "Just now",
-    status: "processing",
-  },
-];
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
 
-const iconMap = {
-  pdf: FileText,
-  txt: File,
-  doc: FileType,
-};
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return mins + " min ago";
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + "h ago";
+  return Math.floor(hrs / 24) + "d ago";
+}
 
-const DocumentList = () => {
+const DocumentList = ({
+  documents,
+  selectedDocId,
+  onSelect,
+  onDelete,
+}: DocumentListProps) => {
+  if (documents.length === 0) {
+    return (
+      <div className="doc-list-wrapper" style={{ justifyContent: "center", alignItems: "center" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", textAlign: "center" }}>
+          No documents yet. Upload a PDF to get started.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="doc-list-wrapper">
-      {documents.map((doc) => {
-        const Icon = iconMap[doc.type];
-        return (
-          <div
-            key={doc.id}
-            className={`doc-item ${doc.active ? "active" : ""}`}
-          >
-            <div className={`doc-icon ${doc.type}`}>
-              <Icon size={18} />
-            </div>
-            <div className="doc-info">
-              <p className="doc-name">{doc.name}</p>
-              <div className="doc-meta">
-                {doc.size} · {doc.date}
-              </div>
-            </div>
-            <div className={`doc-status ${doc.status}`} />
+      {documents.map((doc) => (
+        <div
+          key={doc._id}
+          className={`doc-item ${selectedDocId === doc._id ? "active" : ""}`}
+          onClick={() => onSelect(doc._id)}
+        >
+          <div className="doc-icon pdf">
+            <FileText size={18} />
           </div>
-        );
-      })}
+          <div className="doc-info">
+            <p className="doc-name">{doc.originalName}</p>
+            <div className="doc-meta">
+              {formatSize(doc.fileSize)} · {timeAgo(doc.uploadedAt)} · {doc.totalChunks} chunks
+            </div>
+          </div>
+          <div className={`doc-status ${doc.status}`} />
+          <button
+            className="btn p-1"
+            style={{ color: "var(--text-muted)", background: "none", border: "none" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(doc._id);
+            }}
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

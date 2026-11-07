@@ -837,3 +837,18 @@ body {
   padding: 4px !important;
 }
 
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.upload-card.dragging {
+  border-color: var(--accent-primary) !important;
+  background: var(--accent-glow) !important;
+  transform: scale(1.02);
+}
+
