@@ -876,3 +876,33 @@ body {
   animation: fadeInUp 0.4s ease;
 }
 
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-bubble {
+  position: relative;
+}
+
+.message-bubble:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
