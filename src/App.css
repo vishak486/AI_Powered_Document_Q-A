@@ -906,3 +906,28 @@ body {
   color: var(--accent-primary);
   border-color: var(--accent-primary);
 }
+
+.doc-search-wrapper {
+  margin-bottom: 12px;
+}
+
+.doc-search-input {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.doc-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.doc-search-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}

@@ -29,6 +29,7 @@ const Home = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
    const loadDocuments = async () => {
     try {
@@ -199,15 +200,28 @@ const Home = () => {
                   <X size={20} />
                 </Button>
               </div>
-                            <FileUpload onUpload={handleUpload} isUploading={!!uploadStatus} uploadStatus={uploadStatus} />
+                <FileUpload onUpload={handleUpload} isUploading={!!uploadStatus} uploadStatus={uploadStatus} />
             </div>
             <div className="sidebar-section docs-section">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="section-title">Your Documents</h6>
                 <Badge className="section-badge" pill>{documents.length}</Badge>
               </div>
+              {documents.length > 0 && (
+                <div className="doc-search-wrapper">
+                  <input
+                    type="text"
+                    className="doc-search-input"
+                    placeholder="Search documents..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              )}
               <DocumentList
-                documents={documents}
+                documents={documents.filter(d =>
+                  d.originalName.toLowerCase().includes(searchQuery.toLowerCase())
+                )}
                 selectedDocId={selectedDocId}
                 onSelect={handleSelectDoc}
                 onDelete={handleDelete}
