@@ -852,3 +852,11 @@ body {
   transform: scale(1.02);
 }
 
+.message-row {
+  animation: fadeInUp 0.3s ease;
+}
+
+.chat-messages > .message-row:last-child {
+  animation: fadeInUp 0.4s ease;
+}
+

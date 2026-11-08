@@ -63,7 +63,9 @@ const DocumentList = ({
             style={{ color: "var(--text-muted)", background: "none", border: "none" }}
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(doc._id);
+             if (window.confirm(`Delete "${doc.originalName}"? This cannot be undone.`)) {
+                onDelete(doc._id);
+              }
             }}
             title="Delete"
           >

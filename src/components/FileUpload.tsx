@@ -5,9 +5,10 @@ import { Card } from "react-bootstrap";
 interface FileUploadProps {
   onUpload: (file: File) => Promise<void>;
   isUploading: boolean;
+  uploadStatus?: string | null;
 }
 
-const FileUpload = ({ onUpload, isUploading }: FileUploadProps) => {
+const FileUpload = ({ onUpload, isUploading , uploadStatus  }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -70,7 +71,7 @@ const FileUpload = ({ onUpload, isUploading }: FileUploadProps) => {
       </div>
       <div className="upload-text">
         {isUploading ? (
-          "Processing..."
+          uploadStatus || "Processing..."
         ) : isDragging ? (
           <span className="upload-highlight">Drop your PDF here</span>
         ) : (

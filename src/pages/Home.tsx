@@ -28,7 +28,7 @@ const Home = () => {
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
    const loadDocuments = async () => {
     try {
@@ -50,15 +50,16 @@ const Home = () => {
   }, []);
 
   const handleUpload = async (file: File) => {
-    setIsUploading(true);
+    setUploadStatus("Uploading...");
     try {
+      setUploadStatus("Extracting text & generating embeddings...");
       await uploadDocument(file);
       await loadDocuments();
       toast.success("Document uploaded and processed");
     } catch (err) {
         toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
-      setIsUploading(false);
+      setUploadStatus(null);
     }
   };
 
@@ -198,7 +199,7 @@ const Home = () => {
                   <X size={20} />
                 </Button>
               </div>
-              <FileUpload onUpload={handleUpload} isUploading={isUploading} />
+                            <FileUpload onUpload={handleUpload} isUploading={!!uploadStatus} uploadStatus={uploadStatus} />
             </div>
             <div className="sidebar-section docs-section">
               <div className="d-flex justify-content-between align-items-center mb-3">
