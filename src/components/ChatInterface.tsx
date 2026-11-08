@@ -14,6 +14,7 @@ interface ChatInterfaceProps {
 const ChatInterface = ({ messages, isLoading, hasSelectedDoc, onSend }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,6 +24,16 @@ const ChatInterface = ({ messages, isLoading, hasSelectedDoc, onSend }: ChatInte
     if (!input.trim() || isLoading ) return;
     onSend(input.trim());
     setInput("");
+     if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  };
+
+   const autoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    const el = e.target;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -104,9 +115,10 @@ const ChatInterface = ({ messages, isLoading, hasSelectedDoc, onSend }: ChatInte
                 : "Ask a question across all documents..."
             }
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={autoResize}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
+            ref={textareaRef}
           />
           <Button
             className="send-btn"
