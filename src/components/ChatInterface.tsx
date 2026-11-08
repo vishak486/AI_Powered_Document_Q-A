@@ -3,6 +3,8 @@ import { Send, MessageSquare, FileSearch, Sparkles, Zap, Bot } from "lucide-reac
 import { Button, Form, Row, Col, Card } from "react-bootstrap";
 import MessageBubble from "./MessageBubble";
 import type { Message } from "../pages/Home";
+import { Download } from "lucide-react";
+import jsPDF from "jspdf";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -20,16 +22,74 @@ const ChatInterface = ({ messages, isLoading, hasSelectedDoc, onSend }: ChatInte
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  const exportChat = () => {
+    if (messages.length === 0) return;
+
+    const doc = new jsPDF();
+    let y = 20;
+
+    doc.setFontSize(16);
+    doc.setTextColor(99, 102, 241);
+    doc.text("DocuMind AI - Chat Export", 14, y);
+    y += 10;
+
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text("Exported on " + new Date().toLocaleString(), 14, y);
+    y += 8;
+
+    doc.setDrawColor(99, 102, 241);
+    doc.line(14, y, 196, y);
+    y += 10;
+
+    messages.forEach((msg) => {
+      if (y > 265) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+
+      if (msg.role === "user") {
+        doc.setTextColor(99, 102, 241);
+        doc.text("You:", 14, y);
+      } else {
+        doc.setTextColor(16, 185, 129);
+        doc.text("AI Assistant:", 14, y);
+      }
+
+      y += 6;
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(30);
+      doc.setFontSize(10);
+
+      const lines = doc.splitTextToSize(msg.content, 178);
+      lines.forEach((line: string) => {
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 14, y);
+        y += 5;
+      });
+
+      y += 6;
+    });
+
+    doc.save("documind-chat-export.pdf");
+  };
+
   const handleSend = () => {
-    if (!input.trim() || isLoading ) return;
+    if (!input.trim() || isLoading) return;
     onSend(input.trim());
     setInput("");
-     if (textareaRef.current) {
+    if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
   };
 
-   const autoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const autoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = "auto";
@@ -100,6 +160,15 @@ const ChatInterface = ({ messages, isLoading, hasSelectedDoc, onSend }: ChatInte
             </div>
           )}
           <div ref={messagesEndRef} />
+        </div>
+      )}
+
+            {messages.length > 0 && (
+        <div className="chat-export-bar">
+          <button className="export-btn" onClick={exportChat}>
+            <Download size={14} />
+            Export Chat as PDF
+          </button>
         </div>
       )}
 
